@@ -1,0 +1,30 @@
+{
+  "name": "electron-serial-port",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "hot": ".\\node_modules\\.bin\\gulp watch:electron",
+    "rebuild": "electron-rebuild",
+    "package": "electron-packager . 电子称 --overwrite"
+  },
+  "repository": "https://github.com/caoxiemeihao/electron-serialport",
+  "keywords": [
+    "Electron",
+    "serialport"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^4.0.0",
+    "bcrypt": "^3.0.5",
+    "gulp": "^4.0.0",
+    "electron-rebuild": "^1.8.4"
+  },
+  "dependencies": {
+    "electron-connect": "^0.6.3",
+    "serialport": "^7.1.1",
+    "socket.io": "^2.2.0"
+  }
+}
