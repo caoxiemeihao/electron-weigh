@@ -12,7 +12,8 @@
   "repository": "https://github.com/caoxiemeihao/electron-serialport",
   "keywords": [
     "Electron",
-    "serialport"
+    "serialport",
+    "电子称读取"
   ],
   "author": "GitHub",
   "license": "CC0-1.0",

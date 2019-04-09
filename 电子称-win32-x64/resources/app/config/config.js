@@ -11,9 +11,14 @@ module.exports = {
         kg2g : kg => kg * 1000,            // 千克 -> 克
         g2kg : g  => g / 1000,             //   克 -> 千克
     },
-    keepLength: 4,          // 保留小数点长度
-    isOpenTools: false,     // 默认开启 console
-    listenPort: 3000,       // 服务监听地址
+    keepLength: 4,                         // 保留小数点长度
+    isOpenTools: false,                    // 默认开启 console
+    http: {
+        port: 3000,                        // 服务监听地址
+        middleware: (req, res) => {        // http中间件
+            res.setHeader('Access-Control-Allow-Origin', '*')  // 开放跨域
+        },
+    }
 };
 
 /**

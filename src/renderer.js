@@ -18,17 +18,18 @@ let io = null
 let vm = new Vue({
     data: {
         toolsShow: false,
-        ports: [],
+        ports: [],         // 串口列表
         log: '',
-        weightArr: [],
-        weightJson: [],
+        weightArr: [['千克 kg', '0'], ['克 g', '0'], ['磅 lb', '0']], // 展示用
+        weightJson: [],                                              // 给请求用
         address: '',
         connection: false, // socket.io 链接
         http: false,       // http 请求
     },
     methods: {
         refresh() {
-            window.location.reload(true)
+            window.location.reload(true) // 刷新页面
+            bootstrap()                  // 重新连接
         },
         toggleTools() {
             ipc.send('message', {
@@ -52,24 +53,33 @@ let vm = new Vue({
       }
     },
     mounted() {
-      console.log(this)
+      bootstrap()
     }
 }).$mount('#app')
 
-if(serialPort != null){
-	serialPort.close()
+
+// 页面部分
+// *****************************************************************************
+// 服务部分
+
+
+function bootstrap() {
+    serialPort != null && serialPort.close()
+    startScanPort()
 }
 
 // 列出所有端口
-SerialPort.list(function (err, ports) {
-  vm.ports = ports
-  ports.forEach(function(port) {
-    // console.log(port.comName)                       // COM6
-    // console.log(port.pnpId)
-    // console.log(port.manufacturer)                  // Microsoft | wch.cn[电子称]
-  if (port.serialNumber) startListenPort(port.comName) // serialNumber 有通讯的端口，才会有这个值
-  })
-})
+function startScanPort() {
+    SerialPort.list(function (err, ports) {
+        vm.ports = ports
+        ports.forEach(function(port) {
+            // console.log(port.comName)                       // COM6
+            // console.log(port.pnpId)
+            // console.log(port.manufacturer)                  // Microsoft | wch.cn[电子称]
+            if (port.serialNumber) startListenPort(port.comName) // serialNumber 有通讯的端口，才会有这个值
+        })
+    })
+}
 
 // 启动端口监听
 function startListenPort(COM_PORT) {
@@ -85,7 +95,7 @@ function startListenPort(COM_PORT) {
     }, false)
 
   serialPort.open(function (error) {
-    let log
+    let log, res
 
     if (error) {
       log = `打开端口 ${COM_PORT} 错误：${error}`
@@ -97,7 +107,9 @@ function startListenPort(COM_PORT) {
         log = data.toString()
         console.log(log)
         io.emit('weight_data', log)
-        vm.weightArr = unitConvert(log)
+        res = unitConvert(log)
+        vm.weightArr = res.arr
+        vm.weightJson = res.json
       })
       vm.console(log)
     }
@@ -122,8 +134,10 @@ function unitConvert(unit) { // unit = [+ 0.6478 lb]
     json.lb = config.convert.kg2lb(json.kg)
   }
 
-  vm.weightJson =  [{ kg: json.kg }, { g: json.g }, { lb: json.lb }]
-  return [['千克 kg', json.kg], ['克 g', json.g], ['磅 lb', json.lb]]
+  return {
+    json: [{ kg: json.kg }, { g: json.g }, { lb: json.lb }],
+    arr: [['千克 kg', json.kg], ['克 g', json.g], ['磅 lb', json.lb]]
+  }
 }
 
 // 格式化读取重量
@@ -134,13 +148,16 @@ function unitSplit(unit) {  // unit = [+ 0.6478 lb]
 }
 
 function startServer() {
+    // $.get('http://192.168.116.1:3000').then(res => console.log(res))
   server = http.createServer((req, res) => {
     let str = ''
+
+    config.http.middleware(req, res)
     try {
       str = JSON.stringify(vm.weightJson)
     } catch (e) { vm.console.log(e, 1) }
     vm.http = true                              // 点亮http指示
-    res.write(`var weight_data = ${str};`)      // jsonp 接口
+    res.write(str)
     res.end()
     setTimeout(() => vm.http = false, 900)
   })
@@ -149,9 +166,9 @@ function startServer() {
     vm.connection = true
     client.on('disconnect', () => vm.connection = false)
   })
-  server.listen(config.listenPort, () => {
+  server.listen(config.http.port, () => {
     vm.console(`http 服务器启动成功`)
-    vm.address = `${getIPAdress()}:${config.listenPort}`
+    vm.address = `${getIPAdress()}:${config.http.port}`
   })
 }
 
