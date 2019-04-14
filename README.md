@@ -14,7 +14,8 @@ npm package
 ![Image text](https://github.com/caoxiemeihao/electron-weigh/blob/master/show-img/show-img.png?raw=true)
 
 ---
-> 参考链接
+> **参考链接** `fork源` [electron-serialport](https://github.com/nodebots/electron-serialport).
+[electron-serialport-补充](https://github.com/helloyan/electron-serialport).
 ---
 ## electron-serialport
 
@@ -40,7 +41,3 @@ npm install --msvs_version=2017
 # 运行
 npm start
 ```
-
-更多请参照fork源 [electron-serialport](https://github.com/nodebots/electron-serialport).
-[electron-serialport-补充](https://github.com/helloyan/electron-serialport).
-
