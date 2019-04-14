@@ -14,9 +14,11 @@ npm package
 ![Image text](https://github.com/caoxiemeihao/electron-weigh/blob/master/show-img/show-img.png?raw=true)
 
 ---
-# electron-serialport
+> 参考链接
+---
+## electron-serialport
 
-一个能运行的electron-serialport例程
+`一个能运行的electron-serialport例程`
 
 ## 依赖
 
