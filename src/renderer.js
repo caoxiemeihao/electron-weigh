@@ -16,45 +16,45 @@ let serialPort = null
 let server = null
 let io = null
 let vm = new Vue({
-    data: {
-        toolsShow: false,
-        ports: [],         // 串口列表
-        log: '',
-        weightArr: [['千克 kg', '0'], ['克 g', '0'], ['磅 lb', '0']], // 展示用
-        weightJson: [],                                              // 给请求用
-        address: '',
-        connection: false, // socket.io 链接
-        http: false,       // http 请求
+  data: {
+    toolsShow: false,
+    ports: [],         // 串口列表
+    log: '',
+    weightArr: [['千克 kg', '0'], ['克 g', '0'], ['磅 lb', '0']], // 展示用
+    weightJson: [],                                              // 给请求用
+    address: '',
+    connection: false, // socket.io 链接
+    http: false,       // http 请求
+  },
+  methods: {
+    refresh() {
+      window.location.reload(true) // 刷新页面
+      bootstrap()                  // 重新连接
     },
-    methods: {
-        refresh() {
-            window.location.reload(true) // 刷新页面
-            bootstrap()                  // 重新连接
-        },
-        toggleTools() {
-            ipc.send('message', {
-                cmd: 'toggleDevTools',
-                val: this.toolsShow = !this.toolsShow
-            })
-        },
-        console(str, e = 0) { // 0 没错，1 有错
-          console.log(str)
-          this.log += `${this.log ? '<br>' : ''}<span style="color:${e ? '#ff6f6c': '#333'}">${str}</span>`
-        },
+    toggleTools() {
+      ipc.send('message', {
+        cmd: 'toggleDevTools',
+        val: this.toolsShow = !this.toolsShow
+      })
     },
-    filters: {
-      strlen: function (str) {
-        try {
-          let arr = str.toString().split('.')
-          return `${arr[0]}.${arr[1].substr(0, config.keepLength)}`
-        } catch {
-          return str
-        }
+    console(str, e = 0) { // 0 没错，1 有错
+      console.log(str)
+      this.log += `${this.log ? '<br>' : ''}<span style="color:${e ? '#ff6f6c' : '#333'}">${str}</span>`
+    },
+  },
+  filters: {
+    strlen: function (str) {
+      try {
+        let arr = str.toString().split('.')
+        return `${arr[0]}.${arr[1].substr(0, config.keepLength)}`
+      } catch {
+        return str
       }
-    },
-    mounted() {
-      bootstrap()
     }
+  },
+  mounted() {
+    bootstrap()
+  }
 }).$mount('#app')
 
 
@@ -64,21 +64,21 @@ let vm = new Vue({
 
 
 function bootstrap() {
-    serialPort != null && serialPort.close()
-    startScanPort()
+  serialPort != null && serialPort.close()
+  startScanPort()
 }
 
 // 列出所有端口
 function startScanPort() {
-    SerialPort.list(function (err, ports) {
-        vm.ports = ports
-        ports.forEach(function(port) {
-            // console.log(port.comName)                       // COM6
-            // console.log(port.pnpId)
-            // console.log(port.manufacturer)                  // Microsoft | wch.cn[电子称]
-            if (port.serialNumber) startListenPort(port.comName) // serialNumber 有通讯的端口，才会有这个值
-        })
+  SerialPort.list(function (err, ports) {
+    vm.ports = ports
+    ports.forEach(function (port) {
+      // console.log(port.comName)                       // COM6
+      // console.log(port.pnpId)
+      // console.log(port.manufacturer)                  // Microsoft | wch.cn[电子称]
+      if (port.serialNumber) startListenPort(port.comName) // serialNumber 有通讯的端口，才会有这个值
     })
+  })
 }
 
 // 启动端口监听
@@ -108,8 +108,13 @@ function startListenPort(COM_PORT) {
         console.log(log)
         io.emit('weight_data', log)
         res = unitConvert(log)
-        vm.weightArr = res.arr
-        vm.weightJson = res.json
+
+        // 19-04-25 add 软屏蔽信号干扰
+        if (!isNaN(res.json[0].kg)) {
+          vm.weightArr = res.arr
+          vm.weightJson = res.json
+        }
+
       })
       vm.console(log)
     }
@@ -122,15 +127,15 @@ function unitConvert(unit) { // unit = [+ 0.6478 lb]
 
   if (unit.indexOf(' lb') !== -1) {
     json.kg = config.convert.lb2kg(res.number)
-    json.g  = config.convert.kg2g(json.kg)
+    json.g = config.convert.kg2g(json.kg)
     json.lb = res.number
   } else if (unit.indexOf(' kg') !== -1) {
     json.kg = res.number
-    json.g  = config.convert.kg2g(json.kg)
+    json.g = config.convert.kg2g(json.kg)
     json.lb = config.convert.kg2lb(json.kg)
   } else if (unit.indexOf(' g') !== -1) {
     json.kg = config.convert.g2kg(res.number)
-    json.g  = res.number
+    json.g = res.number
     json.lb = config.convert.kg2lb(json.kg)
   }
 
@@ -148,7 +153,7 @@ function unitSplit(unit) {  // unit = [+ 0.6478 lb]
 }
 
 function startServer() {
-    // $.get('http://192.168.116.1:3000').then(res => console.log(res))
+  // $.get('http://192.168.116.1:3000').then(res => console.log(res))
   server = http.createServer((req, res) => {
     let str = ''
 
@@ -174,15 +179,15 @@ function startServer() {
 
 ///////////////////获取本机ip///////////////////////
 function getIPAdress() {
-    let interfaces = os.networkInterfaces()
-    for (let devName in interfaces) {
-        let iface = interfaces[devName]
-        for (let i = 0; i < iface.length; i++) {
-            let alias = iface[i]
-            if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
-                return alias.address
-            }
-        }
+  let interfaces = os.networkInterfaces()
+  for (let devName in interfaces) {
+    let iface = interfaces[devName]
+    for (let i = 0; i < iface.length; i++) {
+      let alias = iface[i]
+      if (alias.family === 'IPv4' && alias.address !== '127.0.0.1' && !alias.internal) {
+        return alias.address
+      }
     }
+  }
 }
 ///////////////////获取本机ip///////////////////////
