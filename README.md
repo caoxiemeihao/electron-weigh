@@ -12,6 +12,8 @@ npm package
 **展示图**
 
 ![Image text](https://github.com/caoxiemeihao/electron-weigh/blob/master/show-img/show-img.png?raw=true)
+<hr>
+![Image text](https://raw.githubusercontent.com/caoxiemeihao/electron-weigh/master/show-img/show-img1.jpg)
 
 ---
 > **参考链接** `fork源` [electron-serialport](https://github.com/nodebots/electron-serialport).
