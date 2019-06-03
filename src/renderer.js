@@ -110,6 +110,7 @@ function startListenPort(COM_PORT) {
         res = unitConvert(log)
 
         // 19-04-25 add 软屏蔽信号干扰
+        // 19-06-03 com 数据错乱的几种原因，USB电压低、232线材质太差，且过长
         if (!isNaN(res.json[0].kg)) {
           vm.weightArr = res.arr
           vm.weightJson = res.json
