@@ -5,7 +5,7 @@ electron 实现的电子称读取
 
 ### 开发
 ```bash
-npm run dev # 可以热更新
+npm run dev # 开发时候可以热更新
 ```
 
 ### 编译
