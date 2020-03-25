@@ -1,13 +1,22 @@
 # electron-weigh
 electron 实现的电子称读取
 - 支持`ajax`和`websocket`获取信息
-- 打包好的程序 `电子称-win32-x64`
+- 打包好的程序 [电子称-win32-x64](https://github.com/caoxiemeihao/electron-weigh/tree/master/dist)
 
-### 运行
-npm run hot
+### 开发
+```bash
+npm run dev # 可以热更新
+```
+
+### 编译
+```bash
+npm run rebuild # serialport 是 C/C++ 模块，所以需要编译。编译后会生成 .node 文件
+```
 
 ### 打包
-npm package
+```bash
+npm run package
+```
 
 **展示图**
 
